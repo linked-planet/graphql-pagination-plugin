@@ -4,8 +4,12 @@
 name: Gradle Package
 
 on:
-  commit:
-    types: [created]
+  push:
+    branches:
+        - master
+  pull-request:
+    branches:
+        - master
 
 jobs:
   build:
