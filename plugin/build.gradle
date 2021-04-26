@@ -31,7 +31,7 @@ publishing {
     repositories {
         maven {
             name = "Artifactory"
-            url = uri("${System.getenv("ARTIFACTORY_CONTEXT_URL")}/libs-local-snapshot")
+            url = uri(System.getenv("ARTIFACTORY_CONTEXT_URL"))
             credentials {
                 username = project.findProperty("gpr.user") ?: System.getenv("ARTIFACTORY_USERNAME")
                 password = project.findProperty("gpr.key") ?: System.getenv("ARTIFACTORY_PASSWORD")

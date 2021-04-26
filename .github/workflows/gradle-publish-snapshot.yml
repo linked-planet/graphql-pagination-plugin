@@ -4,7 +4,7 @@
 name: Gradle Package
 
 on:
-  release:
+  commit:
     types: [created]
 
 jobs:
@@ -32,4 +32,4 @@ jobs:
       env:
         ARTIFACTORY_USERNAME: ${{ secrets.ARTIFACTORY_USERNAME }}
         ARTIFACTORY_PASSWORD: ${{ secrets.ARTIFACTORY_PASSWORD }}
-        ARTIFACTORY_CONTEXT_URL: ${{ secrets.ARTIFACTORY_CONTEXT_URL }}/libs-release-local
+        ARTIFACTORY_CONTEXT_URL: ${{ secrets.ARTIFACTORY_CONTEXT_URL }}/libs-snapshot-local
