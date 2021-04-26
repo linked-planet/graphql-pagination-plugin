@@ -41,6 +41,8 @@ publishing {
     publications {
         artifactory(MavenPublication) {
             from(components.java)
+            artifactId = "graphql-pagination-plugin"
+            groupId = "com.linked-planet.plugin"
             pom {
                 name = "graphql-pagination-plugin"
             }
