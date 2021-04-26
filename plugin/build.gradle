@@ -33,14 +33,17 @@ publishing {
             name = "Artifactory"
             url = uri(System.getenv("ARTIFACTORY_CONTEXT_URL") ?: "/tmp/release")
             credentials {
-                username = project.findProperty("gpr.user") ?: System.getenv("ARTIFACTORY_USERNAME")
-                password = project.findProperty("gpr.key") ?: System.getenv("ARTIFACTORY_PASSWORD")
+                username = project.findProperty("artifactory.user") ?: System.getenv("ARTIFACTORY_USERNAME")
+                password = project.findProperty("artifactory.key") ?: System.getenv("ARTIFACTORY_PASSWORD")
             }
         }
     }
     publications {
-        gpr(MavenPublication) {
+        artifactory(MavenPublication) {
             from(components.java)
+            pom {
+                name = "graphql-pagination-plugin"
+            }
         }
     }
 }
