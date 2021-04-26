@@ -43,6 +43,7 @@ publishing {
             from(components.java)
             artifactId = "graphql-pagination-plugin"
             groupId = "com.linked-planet.plugin"
+            version = "0.0.1-SNAPSHOT"
             pom {
                 name = "graphql-pagination-plugin"
             }
