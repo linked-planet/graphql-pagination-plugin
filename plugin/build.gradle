@@ -30,11 +30,11 @@ jar {
 publishing {
     repositories {
         maven {
-            name = "GitHubPackages"
-            url = uri("https://maven.pkg.github.com/OWNER/REPOSITORY")
+            name = "Artifactory"
+            url = uri("${System.getenv("ARTIFACTORY_CONTEXT_URL")}/libs-local-snapshot")
             credentials {
-                username = project.findProperty("gpr.user") ?: System.getenv("USERNAME")
-                password = project.findProperty("gpr.key") ?: System.getenv("TOKEN")
+                username = project.findProperty("gpr.user") ?: System.getenv("ARTIFACTORY_USERNAME")
+                password = project.findProperty("gpr.key") ?: System.getenv("ARTIFACTORY_PASSWORD")
             }
         }
     }
