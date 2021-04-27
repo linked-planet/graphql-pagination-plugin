@@ -26,7 +26,7 @@ val Meta.processPagination: CliPlugin
                 Transform.newSources(
                     """|package ${declaration.containingKtFile.packageFqName}
                        |
-                       |import com.mkgroup.compilerplugin.*
+                       |import com.linkedplanet.plugin.graphqlplugin.*
                        |import com.apurebase.kgraphql.schema.dsl.types.*
                        |import com.apurebase.kgraphql.schema.dsl.SchemaBuilder
                        |  
