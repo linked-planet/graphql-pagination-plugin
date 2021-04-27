@@ -1,3 +1,5 @@
+[![Snapshot](https://github.com/linked-planet/graphql-pagination-plugin/actions/workflows/gradle-publish-snapshot.yml/badge.svg?branch=master)](https://github.com/linked-planet/graphql-pagination-plugin/actions/workflows/gradle-publish-snapshot.yml)
+[![Release](https://github.com/linked-planet/graphql-pagination-plugin/actions/workflows/gradle-publish.yml/badge.svg)](https://github.com/linked-planet/graphql-pagination-plugin/actions/workflows/gradle-publish.yml)
 # GraphQL-pagination-plugin
 Plugin for the Kotlin compiler to generate boilerplate code for graphql-pagination
 for use with [kgraphql](https://kgraphql.io/).
