@@ -90,6 +90,16 @@ we can make use of the paginated property.
 } 
 ```
 
+### Alternative 
+One can also use the generated `paginate` function:
+```kotlin
+fun List<Example>.paginate(first: Int?, after: String?, toCursor: (Example) -> String): ExampleConnection
+```
+
+It is more generally useful as it can also be used to build paginated queries in the 
+schema. However, it also exposes one of the generated Types directly (`ExampleConnection`).
+
+
 ## To come
 
  - [ ] Paginated queries helper
