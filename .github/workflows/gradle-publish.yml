@@ -30,6 +30,7 @@ jobs:
     - name: Publish to Artifactory
       run: gradle publish
       env:
+        RELEASE_NAME: ${{ github.event.release.tag_name }}
         ARTIFACTORY_USERNAME: ${{ secrets.ARTIFACTORY_USERNAME }}
         ARTIFACTORY_PASSWORD: ${{ secrets.ARTIFACTORY_PASSWORD }}
         ARTIFACTORY_CONTEXT_URL: ${{ secrets.ARTIFACTORY_CONTEXT_URL }}/libs-release-local

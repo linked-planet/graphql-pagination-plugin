@@ -6,8 +6,8 @@ plugins {
 }
 
 dependencies {
-    compileOnly "org.jetbrains.kotlin:kotlin-compiler-embeddable:$KOTLIN_VERSION"
-    compileOnly "io.arrow-kt:compiler-plugin:$ARROW_META_VERSION"
+    compileOnly("org.jetbrains.kotlin:kotlin-compiler-embeddable:$KOTLIN_VERSION")
+    compileOnly("io.arrow-kt:compiler-plugin:$ARROW_META_VERSION")
 }
 
 compileKotlin {
@@ -23,7 +23,7 @@ jar {
             it.absolutePath.contains(Paths.get("arrow-kt","compiler-plugin").toString())
         })
     ) {
-        exclude 'META-INF/services/org.jetbrains.kotlin.compiler.plugin.ComponentRegistrar'
+        exclude "META-INF/services/org.jetbrains.kotlin.compiler.plugin.ComponentRegistrar"
     }
 }
 
@@ -41,9 +41,9 @@ publishing {
     publications {
         artifactory(MavenPublication) {
             from(components.java)
-            artifactId = "graphql-pagination-plugin"
-            groupId = "com.linked-planet.plugin"
-            version = "0.0.1-SNAPSHOT"
+            artifactId = parent.name
+            groupId = parent.group
+            version = System.getenv("RELEASE_NAME") ?: "0.0.1-SNAPSHOT"
             pom {
                 name = "graphql-pagination-plugin"
             }
