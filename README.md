@@ -12,6 +12,12 @@ Besides the compile dependency
 
 _build.gradle.kts_
 ```kotlin
+repositories {
+    mavenCentral()
+    jcenter()
+    maven { url = uri("https://artifactory.link-time.org/artifactory/libs-release-public") }
+}
+
 dependencies {
     implementation(group = "com.apurebase", name = "kgraphql", version = kGraphQLVersion)
     compile(group = "com.linked-planet.plugin", name = "graphql-plugin", version = graphQLPluginVersion)
