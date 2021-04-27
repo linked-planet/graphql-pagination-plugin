@@ -14,7 +14,6 @@ _build.gradle.kts_
 ```kotlin
 repositories {
     mavenCentral()
-    jcenter()
     maven { url = uri("https://artifactory.link-time.org/artifactory/libs-release-public") }
 }
 
@@ -69,7 +68,7 @@ KGraphQL.schema {
         )(this)
     }
     
-    ...
+    //...
 }
 ```
 
