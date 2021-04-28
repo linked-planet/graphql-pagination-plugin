@@ -45,17 +45,84 @@ val Meta.processIdentifier: CliPlugin
     get() = "Generate identifier boilerplate" {
         meta(
             parameter(this, ::isIdentifierProperty) { prop ->
+                val clazz = prop.parent.parent.parent as KtClass
+                val edgeName = "${clazz.name}Edge"
+                val connName = "${clazz.name}Connection"
                 Transform.newSources(
                     """|package ${prop.containingKtFile.packageFqName}
                        |
                        |import com.linkedplanet.plugin.graphqlplugin.*
+                       |import com.apurebase.kgraphql.schema.dsl.types.*
+                       |import com.apurebase.kgraphql.schema.dsl.SchemaBuilder
                        |
-                       |fun ${(prop.parent.parent.parent as KtClass).name}.toCursor(): String =
+                       |fun ${clazz.name}.toCursor(): String =
                        |    encodeCursor(this, { t -> t.${name}.toString()})
                        |    
-                       |fun ${(prop.parent.parent.parent as KtClass).name}.Companion.fromCursor(cursor: String): $type =
+                       |fun ${clazz.name}.Companion.fromCursor(cursor: String): $type =
                        |    decodeCursor(cursor, { t -> ${type}.parse(t) })
-                       |""".trimMargin("|").file("${name}_identifier")
+                       |    
+                       |fun ${clazz.name}.Companion.paginatedQuery(
+                       |                schemaBuilder: SchemaBuilder,
+                       |                queryName: String,
+                       |                getResults: suspend (Int, $type)->List<${clazz.name}>,
+                       |                default: $type): Unit {
+                       |    schemaBuilder.query(queryName) {
+                       |        resolver { first: Int, after: String? ->
+                       |            getResults(first, after?.let{ decodeCursor(it, ${clazz.name}::fromCursor) } ?: default)
+                       |        }
+                       |    }
+                       |    schemaBuilder.type<${clazz.name}> {
+                       |        property<String>("cursor") {
+                       |            resolver { ${clazz.name!!.decapitalize()} ->
+                       |                encodeCursor(${clazz.name!!.decapitalize()}, toCursor)
+                       |            }
+                       |        }
+                       |    }
+                       |}
+                       |
+                       |fun List<${clazz.name}>.paginateInMemory(first: Int?, after: String?): $connName {
+                       |    return paginateInMemory(
+                       |        this,
+                       |        first,
+                       |        after,
+                       |        ${clazz.name}::toCursor,
+                       |        { n, c -> $edgeName(n, c) },
+                       |        { c, e, p -> $connName(c, e.map { it.fix() }, p) }
+                       |    ).fix()
+                       |}
+                       |
+                       |fun <T: Any, C> ${clazz.name}.Companion.connectionProperty(
+                       |                        typeDsl: TypeDSL<T>,
+                       |                        propertyName: String, 
+                       |                        toResults: suspend (T)->List<${clazz.name}>): Unit {
+                       |    typeDsl.property<$connName>(propertyName) {
+                       |        resolver { t, first: Int?, after: String? ->
+                       |            toResults(t).paginateInMemory(
+                       |                first,
+                       |                after
+                       |            ) 
+                       |        }
+                       |    }
+                       |}
+                       |
+                       |fun <T: Any, C> ${clazz.name}.Companion.connectionProperty(
+                       |                        typeDsl: TypeDSL<T>,
+                       |                        propertyName: String, 
+                       |                        toResults: suspend (T,Int?,${type}?)->List<${clazz.name}>): Unit {
+                       |    typeDsl.property<$connName>(propertyName) {
+                       |        resolver { t, first: Int?, after: String? ->
+                       |            toResults(t, first, after?.let { decodeCursor(it, ${clazz.name}::fromCursor) }).paginateInMemory(
+                       |                first,
+                       |                after
+                       |            ) 
+                       |        }
+                       |    }
+                       |}
+                       |
+                       |fun ${clazz.name}.Companion.registerTypes(s: SchemaBuilder): Unit {
+                       |    s.type<$edgeName>() 
+                       |    s.type<$connName>() 
+                       |}""".trimMargin("|").file("${name}_identifier")
                 )
             }
         )
@@ -71,8 +138,6 @@ val Meta.processPagination: CliPlugin
                     """|package ${declaration.containingKtFile.packageFqName}
                        |
                        |import com.linkedplanet.plugin.graphqlplugin.*
-                       |import com.apurebase.kgraphql.schema.dsl.types.*
-                       |import com.apurebase.kgraphql.schema.dsl.SchemaBuilder
                        |  
                        |data class $edgeName(
                        |    override val node: ${name},
@@ -88,58 +153,7 @@ val Meta.processPagination: CliPlugin
                        |) : Connection<${name}>
                        |
                        |fun Connection<${name}>.fix(): $connName = this as $connName
-                       |
-                       |fun List<${name}>.paginate(first: Int?, after: String?, toCursor: (${name}) -> String): $connName {
-                       |    return paginateInMemory(
-                       |        this,
-                       |        first,
-                       |        after,
-                       |        toCursor,
-                       |        { n, c -> $edgeName(n, c) },
-                       |        { c, e, p -> $connName(c, e.map { it.fix() }, p) }
-                       |    ).fix()
-                       |}
-                       |
-                       |fun <T: Any, C> ${name}.Companion.connectionProperty(
-                       |                        typeDsl: TypeDSL<T>,
-                       |                        propertyName: String, 
-                       |                        toResults: suspend (T)->List<${name}>): Unit {
-                       |    typeDsl.property<$connName>(propertyName) {
-                       |        resolver { t, first: Int?, after: String? ->
-                       |            toResults(t).paginate(
-                       |                first,
-                       |                after,
-                       |                ${name}::toCursor
-                       |            ) 
-                       |        }
-                       |    }
-                       |}
-                       |
-                       |fun <T> ${name}.Companion.paginatedQuery(
-                       |                schemaBuilder: SchemaBuilder,
-                       |                queryName: String,
-                       |                getResults: suspend (Int, T)->List<${name}>,
-                       |                toCursor: (${name})->String,
-                       |                fromCursor: (String)->T,
-                       |                default: T): Unit {
-                       |    schemaBuilder.query(queryName) {
-                       |        resolver { first: Int, after: String? ->
-                       |            getResults(first, after?.let{ decodeCursor(it, fromCursor) } ?: default)
-                       |        }
-                       |    }
-                       |    schemaBuilder.type<${name}> {
-                       |        property<String>("cursor") {
-                       |            resolver { t ->
-                       |                encodeCursor(t, toCursor)
-                       |            }
-                       |        }
-                       |    }
-                       |}
-                       |
-                       |fun ${name}.Companion.registerTypes(s: SchemaBuilder): Unit {
-                       |    s.type<$edgeName>() 
-                       |    s.type<$connName>() 
-                       |}""".trimMargin("|").file("$name")
+                       |""".trimMargin("|").file("$name")
                 )
             }
         )
