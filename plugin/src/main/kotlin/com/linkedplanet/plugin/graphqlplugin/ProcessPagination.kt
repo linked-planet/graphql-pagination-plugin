@@ -68,7 +68,7 @@ val Meta.processIdentifier: CliPlugin
                        |                getResults: suspend (Int, $type)->List<${clazz.name}>): Unit {
                        |    schemaBuilder.query(queryName) {
                        |        resolver { first: Int, after: String? ->
-                       |            getResults(first, after?.let{ ${clazz.name}.decodeCursor(it) } ?: default)
+                       |            getResults(first, after?.let{ ${clazz.name}.fromCursor(it) } ?: default)
                        |        }
                        |    }
                        |    schemaBuilder.type<${clazz.name}> {
@@ -111,7 +111,7 @@ val Meta.processIdentifier: CliPlugin
                        |                        toResults: suspend (T,Int?,${type}?)->List<${clazz.name}>): Unit {
                        |    typeDsl.property<$connName>(propertyName) {
                        |        resolver { t, first: Int?, after: String? ->
-                       |            toResults(t, first, after?.let { ${clazz.name}.decodeCursor(it) }).paginateInMemory(
+                       |            toResults(t, first, after?.let { ${clazz.name}.fromCursor(it) }).paginateInMemory(
                        |                first,
                        |                after
                        |            ) 
