@@ -44,7 +44,7 @@ import org.jetbrains.kotlin.psi.*
 val Meta.processIdentifier: CliPlugin
     get() = "Generate identifier boilerplate" {
         meta(
-            propertyAccessor(this, ::isIdentifierProperty) { prop ->
+            parameter(this, ::isIdentifierProperty) { prop ->
                 Transform.newSources(
                     """|package ${prop.containingKtFile.packageFqName}
                        |
@@ -53,8 +53,8 @@ val Meta.processIdentifier: CliPlugin
                        |fun ${(prop.parent as KtClass).name}.toCursor(): String =
                        |    encodeCursor(this, { t -> t.${name}.toString()})
                        |    
-                       |fun ${(prop.parent as KtClass).name}.Companion.fromCursor(cursor: String): $returnType =
-                       |    decodeCursor(cursor, $returnType::parse)
+                       |fun ${(prop.parent as KtClass).name}.Companion.fromCursor(cursor: String): $type =
+                       |    decodeCursor(cursor, { t -> t.parse() })
                        |""".trimMargin("|").file("${name}_identifier")
                 )
             }
@@ -154,8 +154,5 @@ private fun isPaginatedClass(ktClass: KtClass): Boolean =
             ktClass.companionObject != null &&
             ktClass.parent is KtFile
 
-private fun isIdentifierProperty(ktProperty: KtPropertyAccessor): Boolean =
-    ktProperty.isGetter &&
-            ktProperty.annotationEntries.any { it.text.matches(Regex("@Identifier")) } &&
-            ktProperty.parent is KtClass &&
-            isPaginatedClass(ktProperty.parent as KtClass)
+private fun isIdentifierProperty(ktProperty: KtParameter): Boolean =
+    ktProperty.annotationEntries.any { it.text.matches(Regex("@Identifier")) }

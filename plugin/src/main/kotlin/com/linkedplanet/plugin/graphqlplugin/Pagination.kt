@@ -87,5 +87,5 @@ fun Int.parse(s: String): Int = Integer.parseInt(s)
 annotation class Paginated
 
 @Retention(AnnotationRetention.BINARY)
-@Target(AnnotationTarget.PROPERTY_GETTER)
+@Target(AnnotationTarget.VALUE_PARAMETER)
 annotation class Identifier
