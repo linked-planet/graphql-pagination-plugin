@@ -64,17 +64,17 @@ val Meta.processIdentifier: CliPlugin
                        |fun ${clazz.name}.Companion.paginatedQuery(
                        |                schemaBuilder: SchemaBuilder,
                        |                queryName: String,
-                       |                getResults: suspend (Int, $type)->List<${clazz.name}>,
-                       |                default: $type): Unit {
+                       |                default: $type,
+                       |                getResults: suspend (Int, $type)->List<${clazz.name}>): Unit {
                        |    schemaBuilder.query(queryName) {
                        |        resolver { first: Int, after: String? ->
-                       |            getResults(first, after?.let{ decodeCursor(it, ${clazz.name}::fromCursor) } ?: default)
+                       |            getResults(first, after?.let{ ${clazz.name}.decodeCursor(it) } ?: default)
                        |        }
                        |    }
                        |    schemaBuilder.type<${clazz.name}> {
                        |        property<String>("cursor") {
                        |            resolver { ${clazz.name!!.decapitalize()} ->
-                       |                encodeCursor(${clazz.name!!.decapitalize()}, toCursor)
+                       |                ${clazz.name!!.decapitalize()}.toCursor()
                        |            }
                        |        }
                        |    }
@@ -111,7 +111,7 @@ val Meta.processIdentifier: CliPlugin
                        |                        toResults: suspend (T,Int?,${type}?)->List<${clazz.name}>): Unit {
                        |    typeDsl.property<$connName>(propertyName) {
                        |        resolver { t, first: Int?, after: String? ->
-                       |            toResults(t, first, after?.let { decodeCursor(it, ${clazz.name}::fromCursor) }).paginateInMemory(
+                       |            toResults(t, first, after?.let { ${clazz.name}.decodeCursor(it) }).paginateInMemory(
                        |                first,
                        |                after
                        |            ) 
