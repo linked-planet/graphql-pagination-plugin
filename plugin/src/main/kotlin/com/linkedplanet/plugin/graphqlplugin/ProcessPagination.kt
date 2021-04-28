@@ -122,7 +122,7 @@ val Meta.processIdentifier: CliPlugin
                        |fun ${clazz.name}.Companion.registerTypes(s: SchemaBuilder): Unit {
                        |    s.type<$edgeName>() 
                        |    s.type<$connName>() 
-                       |}""".trimMargin("|").file("${name}_identifier")
+                       |}""".trimMargin("|").file("${clazz.name}_${name}_identifier")
                 )
             }
         )
