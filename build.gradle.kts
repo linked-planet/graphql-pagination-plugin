@@ -3,7 +3,7 @@ import org.gradle.util.GradleVersion
 println("Gradle Version: " + GradleVersion.current().toString())
 
 group = "com.linked-planet.plugin"
-version = "0.0.1-SNAPSHOT"
+version = "0.0.3-SNAPSHOT"
 
 ext.set("kotlinVersion", "1.4.10")
 ext.set("jvmTarget", "1.8")

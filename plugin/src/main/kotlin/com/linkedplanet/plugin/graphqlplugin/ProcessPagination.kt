@@ -80,16 +80,38 @@ val Meta.processPagination: CliPlugin
                        |}
                        |
                        |fun <T: Any> ${name}.Companion.connectionProperty(
+                       |                        typeDsl: TypeDSL<T>,
                        |                        propertyName: String, 
                        |                        toResults: suspend (T)->List<${name}>, 
-                       |                        toCursor: (${name})->String): TypeDSL<T>.()->Unit = {
-                       |    property<$connName>(propertyName) {
+                       |                        toCursor: (${name})->String): Unit {
+                       |    typeDsl.property<$connName>(propertyName) {
                        |        resolver { t, first: Int?, after: String? ->
                        |            toResults(t).paginate(
                        |                first,
                        |                after,
                        |                toCursor
                        |            ) 
+                       |        }
+                       |    }
+                       |}
+                       |
+                       |fun <T> ${name}.Companion.paginatedQuery(
+                       |                schemaBuilder: SchemaBuilder,
+                       |                queryName: String,
+                       |                getResults: suspend (Int, T)->List<${name}>,
+                       |                toCursor: (${name})->String,
+                       |                fromCursor: (String)->T,
+                       |                default: T): Unit {
+                       |    schemaBuilder.query(queryName) {
+                       |        resolver { first: Int, after: String? ->
+                       |            getResults(first, after?.let{ decodeCursor(it, fromCursor) } ?: default)
+                       |        }
+                       |    }
+                       |    type<${name}> {
+                       |        property<String>("cursor") {
+                       |            resolver { t ->
+                       |                encodeCursor(t, toCursor)
+                       |            }
                        |        }
                        |    }
                        |}

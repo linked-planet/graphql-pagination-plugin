@@ -50,7 +50,7 @@ fun <T> paginate(
     connectionConstructor: (Int, List<Edge<T>>, PageInfo) -> Connection<T>
 ): Connection<T> {
     val decodedAfter = after?.let {
-        Base64.getDecoder().decode(it).map { b -> b.toChar() }.joinToString()
+        decodeCursor(it) { it }
     }
     val offset =
         if (decodedAfter != null) results.dropWhile { decodedAfter != toCursor(it) }.drop(1)
@@ -59,7 +59,7 @@ fun <T> paginate(
         if (first != null) offset.take(first)
         else offset
     val edges = shortened.map { item ->
-        edgeConstructor(item, Base64.getEncoder().encodeToString(toCursor(item).toByteArray()))
+        edgeConstructor(item, encodeCursor(item, toCursor))
     }
     return connectionConstructor(
         results.size,
@@ -67,6 +67,12 @@ fun <T> paginate(
         PageInfo(edges.lastOrNull()?.cursor, first?.let { offset.size <= it } ?: true)
     )
 }
+
+fun <T> decodeCursor(cursor: String, fromCursor: (String)->T): T =
+    fromCursor(Base64.getDecoder().decode(cursor).map { b -> b.toChar() }.joinToString())
+
+fun <T> encodeCursor(item: T, toCursor: (T) -> String): String =
+    Base64.getEncoder().encodeToString(toCursor(item).toByteArray())
 
 /**
  * Requires the presence of a companion object to work.
