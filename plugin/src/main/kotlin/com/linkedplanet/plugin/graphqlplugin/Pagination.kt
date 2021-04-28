@@ -74,8 +74,8 @@ fun <T> decodeCursor(cursor: String, fromCursor: (String)->T): T =
 fun <T> encodeCursor(item: T, toCursor: (T) -> String): String =
     Base64.getEncoder().encodeToString(toCursor(item).toByteArray())
 
-fun String.parse(s: String): String = s
-fun Int.parse(s: String): Int = Integer.parseInt(s)
+fun String.Companion.parse(s: String): String = s
+fun Int.Companion.parse(s: String): Int = Integer.parseInt(s)
 
 /**
  * Requires the presence of a companion object to work.

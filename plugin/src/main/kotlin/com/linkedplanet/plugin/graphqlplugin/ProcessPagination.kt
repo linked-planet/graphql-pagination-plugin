@@ -54,7 +54,7 @@ val Meta.processIdentifier: CliPlugin
                        |    encodeCursor(this, { t -> t.${name}.toString()})
                        |    
                        |fun ${(prop.parent.parent.parent as KtClass).name}.Companion.fromCursor(cursor: String): $type =
-                       |    decodeCursor(cursor, { t -> t.parse() })
+                       |    decodeCursor(cursor, { t -> ${type}.parse(t) })
                        |""".trimMargin("|").file("${name}_identifier")
                 )
             }
@@ -90,7 +90,7 @@ val Meta.processPagination: CliPlugin
                        |fun Connection<${name}>.fix(): $connName = this as $connName
                        |
                        |fun List<${name}>.paginate(first: Int?, after: String?, toCursor: (${name}) -> String): $connName {
-                       |    return paginate(
+                       |    return paginateInMemory(
                        |        this,
                        |        first,
                        |        after,
@@ -103,14 +103,13 @@ val Meta.processPagination: CliPlugin
                        |fun <T: Any, C> ${name}.Companion.connectionProperty(
                        |                        typeDsl: TypeDSL<T>,
                        |                        propertyName: String, 
-                       |                        toResults: suspend (T, Int, C)->List<${name}>, 
-                       |                        toCursor: (${name})->String): Unit {
+                       |                        toResults: suspend (T)->List<${name}>): Unit {
                        |    typeDsl.property<$connName>(propertyName) {
                        |        resolver { t, first: Int?, after: String? ->
-                       |            toResults(t).paginateInMemory(
+                       |            toResults(t).paginate(
                        |                first,
                        |                after,
-                       |                toCursor
+                       |                ${name}::toCursor
                        |            ) 
                        |        }
                        |    }
@@ -155,4 +154,6 @@ private fun isPaginatedClass(ktClass: KtClass): Boolean =
             ktClass.parent is KtFile
 
 private fun isIdentifierProperty(ktProperty: KtParameter): Boolean =
-    ktProperty.annotationEntries.any { it.text.matches(Regex("@Identifier")) }
+    ktProperty.annotationEntries.any { it.text.matches(Regex("@Identifier")) } &&
+            ktProperty.parent.parent.parent is KtClass &&
+            isPaginatedClass(ktProperty.parent.parent.parent as KtClass)
