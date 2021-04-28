@@ -50,10 +50,10 @@ val Meta.processIdentifier: CliPlugin
                        |
                        |import com.linkedplanet.plugin.graphqlplugin.*
                        |
-                       |fun ${(prop.parent as KtClass).name}.toCursor(): String =
+                       |fun ${(prop.parent.parent.parent as KtClass).name}.toCursor(): String =
                        |    encodeCursor(this, { t -> t.${name}.toString()})
                        |    
-                       |fun ${(prop.parent as KtClass).name}.Companion.fromCursor(cursor: String): $type =
+                       |fun ${(prop.parent.parent.parent as KtClass).name}.Companion.fromCursor(cursor: String): $type =
                        |    decodeCursor(cursor, { t -> t.parse() })
                        |""".trimMargin("|").file("${name}_identifier")
                 )
