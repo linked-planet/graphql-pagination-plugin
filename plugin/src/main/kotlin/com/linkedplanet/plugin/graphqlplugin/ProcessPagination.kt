@@ -71,11 +71,12 @@ val Meta.processIdentifier: CliPlugin
                        |            getResults(first, after?.let{ ${clazz.name}.fromCursor(it) } ?: default)
                        |        }
                        |    }
-                       |    schemaBuilder.type<${clazz.name}> {
-                       |        property<String>("cursor") {
-                       |            resolver { ${clazz.name!!.decapitalize()} ->
-                       |                ${clazz.name!!.decapitalize()}.toCursor()
-                       |            }
+                       |}
+                       |
+                       |fun ${clazz.name}.Companion.cursorProperty(typeDsl: TypeDSL<${clazz.name}>): Unit {
+                       |    property<String>("cursor") {
+                       |        resolver { ${clazz.name!!.decapitalize()} ->
+                       |            ${clazz.name!!.decapitalize()}.toCursor()
                        |        }
                        |    }
                        |}
