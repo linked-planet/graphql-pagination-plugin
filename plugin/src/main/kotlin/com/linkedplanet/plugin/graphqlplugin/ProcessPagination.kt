@@ -127,7 +127,7 @@ val Meta.processPagination: CliPlugin
                        |            getResults(first, after?.let{ decodeCursor(it, fromCursor) } ?: default)
                        |        }
                        |    }
-                       |    type<${name}> {
+                       |    schemaBuilder.type<${name}> {
                        |        property<String>("cursor") {
                        |            resolver { t ->
                        |                encodeCursor(t, toCursor)
