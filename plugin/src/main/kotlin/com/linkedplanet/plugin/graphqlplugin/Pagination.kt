@@ -41,7 +41,7 @@ interface Connection<T> {
 /**
  * Function that provides in-memory pagination for any list of 'Paginated'-annotated objects.
  */
-fun <T> paginate(
+fun <T> paginateInMemory(
     results: List<T>,
     first: Int?,
     after: String?,
@@ -74,6 +74,9 @@ fun <T> decodeCursor(cursor: String, fromCursor: (String)->T): T =
 fun <T> encodeCursor(item: T, toCursor: (T) -> String): String =
     Base64.getEncoder().encodeToString(toCursor(item).toByteArray())
 
+fun String.parse(s: String): String = s
+fun Int.parse(s: String): Int = Integer.parseInt(s)
+
 /**
  * Requires the presence of a companion object to work.
  * Will generate boilerplate to allow pagination in graphQL
@@ -82,3 +85,7 @@ fun <T> encodeCursor(item: T, toCursor: (T) -> String): String =
 @Retention(AnnotationRetention.BINARY)
 @Target(AnnotationTarget.CLASS)
 annotation class Paginated
+
+@Retention(AnnotationRetention.BINARY)
+@Target(AnnotationTarget.PROPERTY_GETTER)
+annotation class Identifier

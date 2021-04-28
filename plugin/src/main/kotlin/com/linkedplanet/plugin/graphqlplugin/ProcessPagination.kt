@@ -26,6 +26,7 @@ package com.linkedplanet.plugin.graphqlplugin
 import arrow.meta.*
 import arrow.meta.phases.analysis.companionObject
 import arrow.meta.quotes.*
+import org.jetbrains.kotlin.descriptors.DeclarationDescriptor
 import org.jetbrains.kotlin.psi.*
 
 /*
@@ -40,6 +41,26 @@ import org.jetbrains.kotlin.psi.*
   }
   If base directory is not provided, it will be "build" directory in the Gradle daemon workspace.
  */
+val Meta.processIdentifier: CliPlugin
+    get() = "Generate identifier boilerplate" {
+        meta(
+            propertyAccessor(this, ::isIdentifierProperty) { prop ->
+                Transform.newSources(
+                    """|package ${prop.containingKtFile.packageFqName}
+                       |
+                       |import com.linkedplanet.plugin.graphqlplugin.*
+                       |
+                       |fun ${(prop.parent as KtClass).name}.toCursor(): String =
+                       |    encodeCursor(this, { t -> t.${name}.toString()})
+                       |    
+                       |fun ${(prop.parent as KtClass).name}.Companion.fromCursor(cursor: String): $returnType =
+                       |    decodeCursor(cursor, $returnType::parse)
+                       |""".trimMargin("|").file("${name}_identifier")
+                )
+            }
+        )
+    }
+
 val Meta.processPagination: CliPlugin
     get() = "Generate pagination boilerplate" {
         meta(
@@ -79,14 +100,14 @@ val Meta.processPagination: CliPlugin
                        |    ).fix()
                        |}
                        |
-                       |fun <T: Any> ${name}.Companion.connectionProperty(
+                       |fun <T: Any, C> ${name}.Companion.connectionProperty(
                        |                        typeDsl: TypeDSL<T>,
                        |                        propertyName: String, 
-                       |                        toResults: suspend (T)->List<${name}>, 
+                       |                        toResults: suspend (T, Int, C)->List<${name}>, 
                        |                        toCursor: (${name})->String): Unit {
                        |    typeDsl.property<$connName>(propertyName) {
                        |        resolver { t, first: Int?, after: String? ->
-                       |            toResults(t).paginate(
+                       |            toResults(t).paginateInMemory(
                        |                first,
                        |                after,
                        |                toCursor
@@ -132,3 +153,9 @@ private fun isPaginatedClass(ktClass: KtClass): Boolean =
             ktClass.typeParameters.isEmpty() &&
             ktClass.companionObject != null &&
             ktClass.parent is KtFile
+
+private fun isIdentifierProperty(ktProperty: KtPropertyAccessor): Boolean =
+    ktProperty.isGetter &&
+            ktProperty.annotationEntries.any { it.text.matches(Regex("@Identifier")) } &&
+            ktProperty.parent is KtClass &&
+            isPaginatedClass(ktProperty.parent as KtClass)
