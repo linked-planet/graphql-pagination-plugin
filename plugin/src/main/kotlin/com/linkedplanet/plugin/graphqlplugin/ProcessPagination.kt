@@ -74,7 +74,7 @@ val Meta.processIdentifier: CliPlugin
                        |}
                        |
                        |fun ${clazz.name}.Companion.cursorProperty(typeDsl: TypeDSL<${clazz.name}>): Unit {
-                       |    property<String>("cursor") {
+                       |    typeDsl.property<String>("cursor") {
                        |        resolver { ${clazz.name!!.decapitalize()} ->
                        |            ${clazz.name!!.decapitalize()}.toCursor()
                        |        }
