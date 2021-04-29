@@ -43,7 +43,7 @@ publishing {
             from(components.java)
             artifactId = parent.name
             groupId = parent.group
-            version = System.getenv("RELEASE_NAME") ?: "0.0.1-SNAPSHOT"
+            version = System.getenv("RELEASE_NAME") ?: "0.0.3-SNAPSHOT"
             pom {
                 name = "graphql-pagination-plugin"
             }

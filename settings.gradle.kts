@@ -18,4 +18,4 @@ pluginManagement {
 
 rootProject.name = "graphql-plugin"
 
-include("plugin")
+include(":build-plugin", ":plugin-test")

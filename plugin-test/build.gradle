@@ -1,0 +1,36 @@
+
+plugins {
+    id "org.jetbrains.kotlin.jvm"
+}
+
+
+dependencies {
+    implementation "com.apurebase:kgraphql:${kGraphQLVersion}"
+    implementation project(":build-plugin")
+
+    testImplementation "io.kotest:kotest-runner-junit5-jvm:${kotestVersion}"
+    testImplementation "io.kotest:kotest-assertions-core-jvm:${kotestVersion}"
+}
+
+tasks.withType(Test) {
+    useJUnitPlatform()
+}
+
+compileKotlin {
+    kotlinOptions {
+        freeCompilerArgs = [ "-Xplugin=${rootDir}/build-plugin/build/libs/build-plugin.jar",
+                "-P", "plugin:arrow.meta.plugin.compiler:generatedSrcOutputDir=${buildDir}"
+                ]
+        jvmTarget = jvmTarget
+    }
+}
+
+compileTestKotlin {
+    kotlinOptions {
+        jvmTarget = jvmTarget
+    }
+}
+
+tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile) {
+    compileTask -> compileTask.dependsOn ":build-plugin:assemble"
+}

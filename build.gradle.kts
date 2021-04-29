@@ -3,7 +3,7 @@ import org.gradle.util.GradleVersion
 println("Gradle Version: " + GradleVersion.current().toString())
 
 group = "com.linked-planet.plugin"
-version = "0.0.1-SNAPSHOT"
+version = "0.0.3-SNAPSHOT"
 
 ext.set("kotlinVersion", "1.4.10")
 ext.set("jvmTarget", "1.8")
@@ -22,10 +22,6 @@ subprojects {
         jcenter()
         maven { url = uri("https://jitpack.io") }
         maven { url = uri("https://dl.bintray.com/arrow-kt/arrow-kt/") }
-        maven { url = uri("https://dl.bintray.com/kotlin/kotlinx.html") }
-        maven { url = uri("https://dl.bintray.com/kotlin/ktor") }
-        maven { url = uri("https://dl.bintray.com/kotlin/kotlin-js-wrappers") }
-        maven { url = uri("https://kotlin.bintray.com/kotlinx") }
         maven { url = uri("https://dl.bintray.com/kotlin/kotlin-eap") }
         maven { url = uri("https://oss.sonatype.org/content/repositories/snapshots/") }
     }

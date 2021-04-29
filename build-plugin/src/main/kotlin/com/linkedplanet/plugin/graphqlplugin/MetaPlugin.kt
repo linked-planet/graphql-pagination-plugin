@@ -32,6 +32,7 @@ class MetaPlugin : Meta {
     @ExperimentalContracts
     override fun intercept(ctx: CompilerContext): List<CliPlugin> =
         listOf(
+            processIdentifier,
             processPagination,
         )
 }
