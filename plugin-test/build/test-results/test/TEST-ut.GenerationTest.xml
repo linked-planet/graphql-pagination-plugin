@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="ut.GenerationTest" tests="2" skipped="0" failures="0" errors="0" timestamp="2021-04-29T08:24:40" hostname="plouis-p1-gen2" time="0.373">
+  <properties/>
+  <testcase name="TestQuery should have pagination" classname="ut.GenerationTest" time="0.367"/>
+  <testcase name="TestProperty should have pagination" classname="ut.GenerationTest" time="0.005"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>
