@@ -1,2 +1,12 @@
+0.0.3
+* CHANGED function name of `paginate` function to `paginateInMemory`.
+* CHANGED function signature of `paginateInMemory` to no longer require toCursor-function.
+* ADDED `@Identifier` annotation.
+* ADDED generation of `paginatedQuery`-function.
+* ADDED generation of `cursorProperty`-function.
+* ADDED generation of `toCursor`- and `fromCursor`-functions.
+* ADDED overload of connectionProperty with externalized pagination.
+
+
 0.0.2
 * CHANGED target repository for releases to publicly accessible
