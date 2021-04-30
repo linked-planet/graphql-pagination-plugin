@@ -88,10 +88,13 @@ KGraphQL.schema {
     type<SomeType>() {
         Example.connectionProperty(
             this,
-            "exampleConnections", 
-            { parent: SomeType, first: Int?, after: Int? -> 
-                ExampleProvider.getPaginatedExamplesForParent(parent, first, after) 
-            }// :(SomeType, Int?, Type of the Identifier-annotated Property)->List<Example>
+            "exampleConnections",
+            // (SomeType)->Int
+            ExampleProvider::getTotalCount, 
+            // (SomeType, Type of the Identifier-annotated Property) -> Int
+            ExampleProvider::getCountAfterCursor, 
+            // :(SomeType, Int?, Type of the Identifier-annotated Property)->List<Example>
+            ExampleProvider::getPaginatedExamplesForParent 
         )
     }
     

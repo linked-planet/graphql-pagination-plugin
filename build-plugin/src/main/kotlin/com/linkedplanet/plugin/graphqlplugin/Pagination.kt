@@ -68,6 +68,27 @@ fun <T> paginateInMemory(
     )
 }
 
+/**
+ * Function that wraps externalized pagination for any list of 'Paginated'-annotated objects.
+ */
+fun <T> paginateExternal(
+    results: List<T>,
+    totalCount: Int,
+    countAfterOffset: Int,
+    toCursor: (T) -> String,
+    edgeConstructor: (T, String) -> Edge<T>,
+    connectionConstructor: (Int, List<Edge<T>>, PageInfo) -> Connection<T>
+): Connection<T> {
+    val edges = results.map { item ->
+        edgeConstructor(item, encodeCursor(item, toCursor))
+    }
+    return connectionConstructor(
+        totalCount,
+        edges,
+        PageInfo(edges.lastOrNull()?.cursor, countAfterOffset <= results.size)
+    )
+}
+
 fun <T> decodeCursor(cursor: String, fromCursor: (String)->T): T =
     fromCursor(Base64.getDecoder().decode(cursor).map { b -> b.toChar() }.joinToString())
 
