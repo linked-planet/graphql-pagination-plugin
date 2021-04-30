@@ -92,6 +92,17 @@ val Meta.processIdentifier: CliPlugin
                        |    ).fix()
                        |}
                        |
+                       |fun List<${clazz.name}>.paginateExternal(totalCount: Int, countAfterCursor: Int): $connName {
+                       |    return paginateExternal(
+                       |        this,
+                       |        totalCount,
+                       |        countAfterCursor,
+                       |        ${clazz.name}::toCursor,
+                       |        { n, c -> $edgeName(n, c) },
+                       |        { c, e, p -> $connName(c, e.map { it.fix() }, p) }
+                       |    ).fix()
+                       |}
+                       |
                        |fun <T: Any> ${clazz.name}.Companion.connectionProperty(
                        |                        typeDsl: TypeDSL<T>,
                        |                        propertyName: String, 
@@ -109,12 +120,14 @@ val Meta.processIdentifier: CliPlugin
                        |fun <T: Any> ${clazz.name}.Companion.connectionProperty(
                        |                        typeDsl: TypeDSL<T>,
                        |                        propertyName: String, 
+                       |                        totalCount: (T)->Int,
+                       |                        countAfterCursor: (T,${type}?)->Int,
                        |                        toResults: suspend (T,Int?,${type}?)->List<${clazz.name}>): Unit {
                        |    typeDsl.property<$connName>(propertyName) {
                        |        resolver { t, first: Int?, after: String? ->
-                       |            toResults(t, first, after?.let { ${clazz.name}.fromCursor(it) }).paginateInMemory(
-                       |                first,
-                       |                after
+                       |            toResults(t, first, after?.let { ${clazz.name}.fromCursor(it) }).paginateExternal(
+                       |                totalCount(t),
+                       |                countAfterCursor(t, after?.let { ${clazz.name}.fromCursor(it) })
                        |            ) 
                        |        }
                        |    }

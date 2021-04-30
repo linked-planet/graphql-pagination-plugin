@@ -1,3 +1,7 @@
+0.0.4
+* CHANGED function signature of connectionProperty for use with externalized pagination
+* FIXED #2:  Externalized Pagination in connectionProperty reports wrong totalCount and lastPage values
+
 0.0.3
 * CHANGED function name of `paginate` function to `paginateInMemory`.
 * CHANGED function signature of `paginateInMemory` to no longer require toCursor-function.

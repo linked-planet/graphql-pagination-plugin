@@ -25,7 +25,8 @@ buildNumber.properties
 .gradle/
 gradle/
 *build/*
-/plugin/build/
+/build-plugin/build/
+/plugin-test/build/
 # ----------------------------------
 # App-specific
 # ----------------------------------

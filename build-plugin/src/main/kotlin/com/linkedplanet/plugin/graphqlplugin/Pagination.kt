@@ -49,22 +49,40 @@ fun <T> paginateInMemory(
     edgeConstructor: (T, String) -> Edge<T>,
     connectionConstructor: (Int, List<Edge<T>>, PageInfo) -> Connection<T>
 ): Connection<T> {
-    val decodedAfter = after?.let {
-        decodeCursor(it) { it }
-    }
     val offset =
-        if (decodedAfter != null) results.dropWhile { decodedAfter != toCursor(it) }.drop(1)
+        if (after != null) results.dropWhile { after != toCursor(it) }.drop(1)
         else results
     val shortened =
         if (first != null) offset.take(first)
         else offset
     val edges = shortened.map { item ->
-        edgeConstructor(item, encodeCursor(item, toCursor))
+        edgeConstructor(item, toCursor(item))
     }
     return connectionConstructor(
         results.size,
         edges,
         PageInfo(edges.lastOrNull()?.cursor, first?.let { offset.size <= it } ?: true)
+    )
+}
+
+/**
+ * Function that wraps externalized pagination for any list of 'Paginated'-annotated objects.
+ */
+fun <T> paginateExternal(
+    results: List<T>,
+    totalCount: Int,
+    countAfterOffset: Int,
+    toCursor: (T) -> String,
+    edgeConstructor: (T, String) -> Edge<T>,
+    connectionConstructor: (Int, List<Edge<T>>, PageInfo) -> Connection<T>
+): Connection<T> {
+    val edges = results.map { item ->
+        edgeConstructor(item, encodeCursor(item, toCursor))
+    }
+    return connectionConstructor(
+        totalCount,
+        edges,
+        PageInfo(edges.lastOrNull()?.cursor, countAfterOffset <= results.size)
     )
 }
 

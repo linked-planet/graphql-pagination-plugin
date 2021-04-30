@@ -7,13 +7,17 @@ import com.linkedplanet.plugin.graphqlplugin.*
 data class TestProperty(
     @Identifier val uniqueId: Int,
     val someString: String
-) {companion object}
+) {
+    companion object
+}
 
 @Paginated
 data class TestQuery(
     @Identifier val uniqueId: Int,
     val someString: String
-) {companion object}
+) {
+    companion object
+}
 
 val schema = KGraphQL.schema {
     type<PageInfo>()
@@ -22,14 +26,17 @@ val schema = KGraphQL.schema {
     type<TestQuery>() {
         TestQuery.cursorProperty(this)
         TestProperty.connectionProperty(this, "propConnection") { _: TestQuery ->
-            listOf(TestProperty(0, "Property"))
+            listOf(
+                TestProperty(0, "Property1"),
+                TestProperty(1, "Property2")
+            )
         }
     }
 
     TestQuery.paginatedQuery(this, "allQueries", -1) { first: Int, after: Int ->
         listOf(
-            TestQuery(0,"Query 1"),
-            TestQuery(1,"Query 2"),
+            TestQuery(0, "Query 1"),
+            TestQuery(1, "Query 2"),
         ).filter { it.uniqueId > after }.take(first)
     }
 }
