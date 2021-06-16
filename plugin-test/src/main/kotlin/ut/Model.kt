@@ -27,16 +27,16 @@ val schema = KGraphQL.schema {
         TestQuery.cursorProperty(this)
         TestProperty.connectionProperty(this, "propConnection") { _: TestQuery ->
             listOf(
-                TestProperty(0, "Property1"),
-                TestProperty(1, "Property2")
+                TestProperty(10, "Property1"),
+                TestProperty(11, "Property2")
             )
         }
     }
 
     TestQuery.paginatedQuery(this, "allQueries", -1) { first: Int, after: Int ->
         listOf(
-            TestQuery(0, "Query 1"),
-            TestQuery(1, "Query 2"),
+            TestQuery(10, "Query 1"),
+            TestQuery(11, "Query 2"),
         ).filter { it.uniqueId > after }.take(first)
     }
 }

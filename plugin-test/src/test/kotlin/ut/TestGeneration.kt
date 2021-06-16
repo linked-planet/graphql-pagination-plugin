@@ -13,7 +13,7 @@ class GenerationTest: StringSpec({
     }
 
     "TestQuery should accept offset" {
-        val result = schema.execute("{allQueries(first:1, after: \"MA==\"){someString cursor}}")
+        val result = schema.execute("{allQueries(first:1, after: \"MTA=\"){someString cursor}}")
         result shouldNotContain "Query 1"
         result shouldContain "Query 2"
     }
@@ -27,7 +27,7 @@ class GenerationTest: StringSpec({
     }
 
     "TestProperty should accept offset" {
-        val result = schema.execute("{allQueries(first:2){someString propConnection(first:1, after: \"MA==\") { edges { node {someString}} }}}")
+        val result = schema.execute("{allQueries(first:2){someString propConnection(first:1, after: \"MTA=\") { edges { node {someString}} }}}")
         result shouldContain "Query 1"
         result shouldContain "Query 2"
         result shouldNotContain "Property1"
