@@ -87,7 +87,7 @@ fun <T> paginateExternal(
 }
 
 fun <T> decodeCursor(cursor: String, fromCursor: (String)->T): T =
-    fromCursor(Base64.getDecoder().decode(cursor).map { b -> b.toChar() }.joinToString())
+    fromCursor(Base64.getDecoder().decode(cursor).map { b -> b.toChar() }.joinToString(""))
 
 fun <T> encodeCursor(item: T, toCursor: (T) -> String): String =
     Base64.getEncoder().encodeToString(toCursor(item).toByteArray())
