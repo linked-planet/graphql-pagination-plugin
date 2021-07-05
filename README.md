@@ -14,12 +14,12 @@ _build.gradle.kts_
 ```kotlin
 repositories {
     mavenCentral()
-    maven { url = uri("https://artifactory.link-time.org/artifactory/libs-release-public") }
+    maven { url = uri("https://maven.pkg.github.com/linked-planet/graphql-pagination-plugin") }
 }
 
 dependencies {
     implementation(group = "com.apurebase", name = "kgraphql", version = kGraphQLVersion)
-    compile(group = "com.linked-planet.plugin", name = "graphql-plugin", version = graphQLPluginVersion)
+    compile(group = "com.linked-planet.plugin", name = "graphql-plugin", version = graphQLPluginVersion) 
 }
 ```
 using this plugin will require letting the compiler know it is supposed to use it.
