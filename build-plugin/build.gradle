@@ -30,6 +30,7 @@ jar {
 publishing {
     publications {
         gpr(MavenPublication) {
+            println(components)
             from(components.java)
             artifactId = parent.name
             groupId = parent.group
